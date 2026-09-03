@@ -1,0 +1,59 @@
+# DigitalOcean App Platform spec for the PaperBot admin panel + worker.
+# Create with:  doctl apps create --spec app.yaml
+# (Fill secret values in the App Platform dashboard or via `doctl`.)
+name: paperbot-admin
+region: blr
+services:
+  - name: admin
+    source_dir: webapp
+    github:
+      repo: your-github-user/paperbot     # <-- change this
+      branch: main
+      deploy_on_push: true
+    run_command: gunicorn --workers 1 --threads 4 --timeout 120 --bind 0.0.0.0:8080 app:app
+    environment_slug: python
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    http_port: 8080
+    health_check:
+      http_path: /health
+    envs:
+      - key: TURSO_DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+      - key: TURSO_AUTH_TOKEN
+        scope: RUN_TIME
+        type: SECRET
+      - key: SECRET_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: ADMIN_USERNAME
+        scope: RUN_TIME
+        value: admin
+      - key: ADMIN_PASSWORD
+        scope: RUN_TIME
+        type: SECRET
+      - key: GEMINI_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: GEMINI_MODEL
+        scope: RUN_TIME
+        value: gemini-2.5-flash
+      - key: WHATSAPP_TOKEN
+        scope: RUN_TIME
+        type: SECRET
+      - key: PHONE_NUMBER_ID
+        scope: RUN_TIME
+        value: "1262082083659668"
+      - key: SPACES_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: SPACES_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: SPACES_BUCKET
+        scope: RUN_TIME
+        value: paperbot-papers
+      - key: SPACES_REGION
+        scope: RUN_TIME
+        value: blr1
